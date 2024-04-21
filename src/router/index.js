@@ -5,6 +5,7 @@ import Login from '../component/login';
 import PageNotFound from '../pages/pageNotFound';
 import Layout from "../layout/layout";
 import Admin from "../pages/Admin";
+import Invoice from "../component/Invoice";
 
 export const router = createBrowserRouter([
   {
@@ -17,6 +18,10 @@ export const router = createBrowserRouter([
       {
         path: '/admin',
         element: <Admin />
+      },
+      {
+        path: '/invoice',
+        element: <Invoice />
       },
      
      
