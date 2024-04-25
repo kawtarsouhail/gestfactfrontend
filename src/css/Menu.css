@@ -21,8 +21,6 @@ body{
     height: 100vh;
     background: var(--body-color);
 }
-
-
 .sidebar {
     position: fixed;
     top: 0;
@@ -31,7 +29,6 @@ body{
     width:20%;
     background-color: var(--sidebar-color);
 }
-
 .Menu .LOGO{
     display: flex;
     flex-direction: column;
@@ -42,9 +39,10 @@ body{
     margin-top: 4%;
 }
 .Menu .LOGO img {
-    width: 40%;
-    height: 30%;
-    margin-top: 0%;
+    width: 50%;
+    height: 50%;
+    margin-top: 15%;
+    margin-bottom: 10%;
 }
 .Menu .LOGO h2{
     font-size:x-large;
@@ -64,18 +62,15 @@ body{
     background-color: #ffffff;
 }
 
-.Menu .Profil img{
-    width: 50px;
-    height: 50px;
-    border:#707070;
-    border-radius: 50%;
-    margin-top: 15%;
+.Menu .Profil svg{
+    margin:10%
 }
 
-.Menu .Profil-Link{
+.Menu .Profil-Link-css{
     text-decoration: none;
     font-weight:600;
     color: var(--sidebar-color);
+
 }
 
 .Menu .green-circle{
@@ -86,19 +81,29 @@ body{
     margin-right: 3%;
 }
 
-.Menu .Infos small{
+.Menu .Infos-css small{
     display: flex;
     flex-direction: row;
     align-items: center;
+    font-weight: 400;
+
+}
+.Menu .Infos-css p{
+    margin: 0%;
+
+}
+.Menu .Infos-css {
+    margin: 5%;
 }
 
-.Menu .menu-links{
-    margin: 10%;
+.Menu .menu-links-css{
+    margin-left: 10%;
     display: flex;
     flex-direction: column;
+    margin-top: 10%;
 }
-.Menu .menu-links li{
-    margin: 3%;
+.Menu .menu-links-css li{
+    margin-top: 10%;
     height: 30px;
     list-style: none;
 }
@@ -110,16 +115,30 @@ body{
     align-items: center;
     justify-content: flex-start;
 }
-.Menu .menu-links :hover{
+.Menu .menu-links-css li:hover{
     background-color: rgb(255, 255, 255);
-    margin: 1%;
-    border-radius: 3px;
-    color:var(--sidebar-color)
+    padding-left: 5%;
+    padding-bottom: 8%;
+    padding-top: 8%;
+    margin-bottom: 0.5%;
+    border-radius: 9px 0px 0px 9px;
+    color:var(--sidebar-color) 
 }
-.Menu .menu-links .icon{
-    font-size: 25px;
-    margin-right: 15px;
+.menu-links-css li:hover svg path {
+    fill: var(--sidebar-color); /* Changement de couleur du remplissage au survol */
 }
+
+.Menu .nav-links-css li:hover{
+    background-color: rgb(255, 255, 255);
+    padding: 0%;
+    margin-bottom: 0.5%;
+    border-radius: 9px 0px 0px 9px;
+    color:var(--sidebar-color) 
+}
+.nav-links-css li:hover svg path {
+    fill: var(--sidebar-color); /* Changement de couleur du remplissage au survol */
+}
+
 .sidebar li a{
     color: #ffffff;
 }
@@ -142,14 +161,17 @@ body{
     align-items: center;
     justify-content: space-evenly;
     color: #ffffff;
-    margin: 5%;
+
 }
 
-.Menu .Mode-Deconnexion{
-    position: relative;
-    margin-top: 30%;
-    bottom: 0px;
+
+.Mode-Deconnexion {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    margin-bottom: 10%;
 }
+
 
 @media (min-height: 692px) { 
     .Menu .LOGO h2{
@@ -162,12 +184,10 @@ body{
     .Menu .LOGO img{
         margin-top: 10%;
     }
-    .Menu .menu-links li{
+    .Menu .menu-links-css li{
         margin-bottom: 4%;
     }
-    .Menu .Mode-Deconnexion{
-        margin-top: 40%;
-    }
+
 }
 
 a {
@@ -206,20 +226,26 @@ nav .Mode-Deconnexion{
     background-color:var(--sidebar-color);
     color: #fff;
 }
-  
-.nav-links a {
+.nav-links-css  {
+    margin-top: 4%;
+
+}  
+.nav-links-css a {
     color: #fff;
 }
 
-.nav-links a:hover{
+.nav-links-css a:hover{
     color: var(--sidebar-color);
 }
-  
+.nav-links-css svg{
+    margin-right: 4%;
+}
 /* LOGO */
 .Nav-logo img {
-    width: 70px;
-    height: 70px;
-    margin-top: 1px;
+    width: 50%;
+    height: 20%;
+    margin-top: 3%;
+    margin-left: 20%;
 }
   
 /* NAVBAR MENU */
@@ -238,8 +264,8 @@ nav .Mode-Deconnexion{
 .Nav-menu li {
     padding: 5px 14px;
 }
-  
-input[type=checkbox] {
+
+.nav-links-css input[type=checkbox] {
     display: none;
 } 
   
@@ -252,7 +278,11 @@ input[type=checkbox] {
 .toggle:hover {
     color:grey;
 }
-  
+
+.Mynav a{
+    text-decoration: none;
+}
+
   /* APPLYING MEDIA QUERIES */
 @media (max-width: 1072px) {
    .Nav-menu {
@@ -276,16 +306,17 @@ input[type=checkbox] {
       margin-top: 12px;
     }
   
-    input[type=checkbox]:checked ~ .Nav-menu {
+    .nav-links-css input[type=checkbox]:checked ~ .Nav-menu {
       display: block;
     }
   
     .toggle {
       display: block;
       margin-right: 30px;
+      margin-top: -5%;
     }
   
-    .nav-links .icon{
+    .nav-links-css .icon{
         font-size: 25px;
         margin-right: 15px;
     }

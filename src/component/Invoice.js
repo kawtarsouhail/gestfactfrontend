@@ -239,13 +239,27 @@ const Invoice = () => {
 
   
   const [formData, setFormData] = useState({
-    input1: '',
-    input2: '',
-    select1: '',
-    date1: '',
-    // Ajoutez les autres champs d'entrée de la même manière
-    // input3: '', input4: '', ..., input16: ''
-  });
+    NumFacture: '',
+    MontantHT: 'null',
+    DateFacture: '',
+    Taux: '',
+    TVA: '',
+    MontantTTC: '',
+    idEmetteur: '',
+    TypeContrat: '',
+    EtabliPar: '',
+    EtaPayement: '',
+    ModeReg: '',
+    NomEmetteur: '',
+    NomClient: '',
+    NumBonLiv: '',
+    dateBonLiv: '',
+    TypeValidation: '',
+    NumRemise: '',
+    MontantEnc: '',
+    NumCheque: ''
+});
+
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -277,71 +291,73 @@ const Invoice = () => {
 
   // Tableau de configuration des champs
   const fieldsConfig = [
-    { label: 'Nº de Facture', type: 'number' },
-    { label: 'Nom Client', type: 'text',  },
-    { label: 'Nº Bon de livraison', type: 'number' },
-    { label: 'Date de Livraison', type: 'date' },
-    { label: 'Type de validation', type: 'select', options: ['[Choisir Type de livraison ]','WhatsApp', 'Bon de Commande', 'Bon accord'] },
-    { label: 'Montant HT', type: 'number' },
-    { label: 'Date de Facture', type: 'date' },
-    { label: 'Teaux', type: 'number' },
-    { label: 'TVA', type: 'number' },
-    { label: 'Montant TTC', type: 'number' },
-    { label: 'EMETTEUR', type: 'select', options: ['[Choisir Type de livraison ]','Contract', 'Ponctuel']  },
-    { label: 'Type de Contract', type: 'select', options: ['[Choisir Type de livraison ]','Contract', 'Ponctuel'] },
-    { label: 'Etablit Par', type: 'text' },
-    { label: 'PAYEE / IMPAYEE', type: 'select', options: ['[Choisir PAYEE / IMPAYEE]','PAYEE', 'IMPAYEE'] },
-    { label: 'MODE DE REGLEMENT', type: 'select', options: ['[MODE DE REGLEMENT]','ESPÈCE', 'CHÈQUE ','VIREMENT','PAR EFFET'] },
-    { label: 'MONTANT ENCAISSE', type: 'number',  },
+    { label: 'NumFacture', type: 'text' },
+    { label: 'NomClient', type: 'text' },
+    { label: 'NumBonLiv', type: 'number' },
+    { label: 'dateBonLiv', type: 'date' },
+    { label: 'TypeValidation', type: 'select', options: ['[Choisir Type de livraison ]','WhatsApp', 'Bon de Commande', 'Bon accord'] },
+    { label: 'MontantHT', type: 'number', step: '0.01' },
+    { label: 'DateFacture', type: 'date' },
+    { label: 'Taux', type: 'number', step: '0.01' },
+    { label: 'TVA', type: 'number', step: '0.01' },
+    { label: 'MontantTTC', type: 'number', step: '0.01' },
+    { label: 'NomEmetteur', type: 'select', options: ['[Choisir Type de livraison ]','Contract', 'Ponctuel'] },
+    { label: 'TypeContrat', type: 'select', options: ['[Choisir Type de livraison ]','Contract', 'Ponctuel'] },
+    { label: 'EtabliPar', type: 'text' },
+    { label: 'EtaPayement', type: 'select', options: ['[Choisir PAYEE / IMPAYEE]','PAYEE', 'IMPAYEE'] },
+    { label: 'ModeReg', type: 'select', options: ['[MODE DE REGLEMENT]','ESPÈCE', 'CHÈQUE ','VIREMENT','PAR EFFET'] },
+    { label: 'MontantEnc', type: 'number', step: '0.01' },
+    { label: 'NumRemise', type: 'text' },
+    { label: 'NumCheque', type: 'text' },
+   
+];
 
+// Votre composant Invoice reste inchangé
 
-  ];
 
 return (
   <div className='invoice'>
     <center><h1>Nouvelle Facture</h1></center>
     <form className="form" onSubmit={handleSubmit}>
-      <div className="input-container">
-        {/* Boucle pour générer les champs d'entrée */}
-        {fieldsConfig.map((field, index) => (
-          <div key={index} className='item'>
-            <label htmlFor={field.label}>
-              {field.label}
-            </label>
-            {/* Générez le champ d'entrée en fonction du type */}
-            {field.type === 'select' ? (
-              <select
-                name={field.name}
-                value={formData[field.name]}
-                onChange={handleChange}
+  <div className="input-container">
+    {fieldsConfig.map((field, index) => (
+      <div key={index} className='item'>
+        <label htmlFor={field.label}>
+          {field.label}
+        </label>
+        {field.type === 'select' ? (
+          <select
+            name={field.label}
+            value={formData[field.label]}
+            onChange={handleChange}
+          >
+            {field.options.map((option, optionIndex) => (
+              <option
+                key={optionIndex}
+                value={option}
+                disabled={option === '[MODE DE REGLEMENT]' || option === '[Choisir PAYEE / IMPAYEE]' || option === '[Choisir Type de livraison ]'}
               >
-                {/* Générez les options du select */}
-                {field.options.map((option, optionIndex) => (
-                  <option
-                    key={optionIndex}
-                    value={option}
-                    disabled={option === '[MODE DE REGLEMENT]' || option === '[Choisir PAYEE / IMPAYEE]' || option === '[Choisir Type de livraison ]'}
-                  >
-                    {option}
-                  </option>
-                ))}
-              </select>
-            ) : (
-              <input
-                type={field.type}
-                name={field.label}
-                value={formData[field.name]}
-                onChange={handleChange}
-                placeholder={field.label}
-              />
-            )}
-          </div>
-        ))}
+                {option}
+              </option>
+            ))}
+          </select>
+        ) : (
+          <input
+            type={field.type}
+            name={field.label}
+            value={formData[field.label]}
+            onChange={handleChange}
+            placeholder={field.label}
+          />
+        )}
       </div>
-      <div className="button-container">
-        <button type="submit">Enregistrer</button>
-      </div>
-    </form>
+    ))}
+  </div>
+  <div className="button-container">
+    <button type="submit">Enregistrer</button>
+  </div>
+</form>
+
   </div>
 );
 
