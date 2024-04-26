@@ -5,7 +5,7 @@ import PageNotFound from '../pages/pageNotFound';
 import Layout from '../layout/layout';
 import Invoice from '../component/Invoice';
 import MainVisualiser from '../component/MainVisualiser';
-import GestionCompte from '../component/GestionCompte';
+import GestionCompte from '../component/GestionComptes/GestionCompte';
 
 const ProtectedRoute = ({ children }) => {
   const isAuthenticated = () => {

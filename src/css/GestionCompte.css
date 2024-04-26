@@ -3,7 +3,7 @@
     padding-bottom: 1%;
 }
 
-.container {
+.GestionCompte .container {
   display: flex;
   justify-content: space-around; /* Utilise 'space-around' pour une meilleure répartition */
   padding: 20px;
@@ -49,7 +49,7 @@
 }
 
 /* GestionCompte.css */
-.form {
+.form-add-user {
     width: 80%;
     margin: 20px auto;
     padding: 5px;
@@ -58,14 +58,14 @@
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
-.form label {
+.form-add-user label {
     margin-bottom: 5px;
     color: #333; /* Dark grey color for text */
     font-weight: 300;
     margin-left: 2%;
 }
 
-.form input {
+.form-add-user input {
     padding: 5px;
     margin-bottom: 0px;
     border: 2px solid #ced4da; /* Light grey border */
@@ -73,16 +73,16 @@
     font-size: 16px;
     width: 100%;
 }
-.form input[type=text]{
+.form-add-user input[type=text]{
     min-width:65%;
 }
 
-.form input:focus {
+.form-add-user input:focus {
     border-color: #80bdff;
     outline: none; /* Remove default focus outline */
 }
 
-.form button {
+.form-add-user button {
     padding: 10px;
     background-color: #007bff; /* Bootstrap primary blue */
     color: white;
@@ -95,23 +95,23 @@
     margin-bottom: 2%;
 }
 
-.form button:hover {
+.form-add-user button:hover {
     background-color: #0056b3; /* Darker blue on hover */
 }
 
 /* Responsive styling for form inputs */
-.form-row {
+.form-add-row {
     display: flex;
     flex-wrap: wrap;
     justify-content: space-between;
 }
 
-.form-row .form-group {
+.form-add-row .form-group {
     flex: 1 1 30%; /* Take up nearly half of the row, with some space in between */
     min-width: 240px; /* Minimum width before wrapping */
 }
 
-.form-group{
+.form-add-row .form-group{
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -120,6 +120,14 @@
 }
 
 
+.form-add-row-select{
+    width: 60%;
+}
+.form-add-row-select select{
+    width: 100%;
+    border: 2px solid #ced4da;
+}
+.user-ta
 .user-table {
     margin: auto;
     width: 90%;
@@ -158,13 +166,13 @@
 }
 
 
-.pagination {
+.pagination-Gestion {
     display: flex;
     justify-content: center;
     margin-top: 20px;
 }
 
-.pagination button {
+.pagination-Gestion button {
     margin: 0 5px;
     padding: 5px 10px;
     background-color: #f4f4f4;
@@ -172,7 +180,7 @@
     cursor: pointer;
 }
 
-.pagination button:hover {
+.pagination-Gestion button:hover {
     background-color: #e2e2e2;
 }
 
@@ -183,17 +191,17 @@
     }
 }
 @media (max-width: 600px) {
-    .form {
+    .form-add-user {
         width: 90%; /* Make form wider on smaller screens */
         padding: 10px;
     }
 
-    .form-row .form-group {
+    .form-add-row .form-group {
         flex: 1 1 100%; /* Each input takes full width on small screens */
         min-width: 0; /* No minimum width needed on small screens */
     }
 
-    .form input {
+    .form-add-user input {
         padding: 8px;
     }
 }

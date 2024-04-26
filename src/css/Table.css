@@ -134,7 +134,34 @@
 }
 
 
+.modal-delete {
+  display: block; /* Hide by default */
+  position: fixed; /* Stay in place */
+  z-index: 1; /* Sit on top */
+  left: 0;
+  top: 0;
+  width: 80%; /* Full width */
+  height: 100%; /* Full height */
+  margin-left:20%;
+  overflow: auto; /* Enable scroll if needed */
+  background-color: rgba(0, 0, 0, 0.4); /* Black background with opacity */
+}
 
+/* Modal container */
+.modal-delete .modal-content {
+  background-color: white;
+  margin: 20% auto; /* 10% from the top and centered */
+  padding: 20px;
+  border: 1.5px solid #78c2ff; /* Bordure verte */
+  border-radius: 10px; /* Coins arrondis */
+  width: 50%; /* Could be more or less, depending on screen size */
+  position: relative; /* Ensure the close button's absolute position relative to this container */
+  box-shadow: 0 4px 8px rgb(120, 194, 255,0.1); /* Légère ombre portée */
+}
+
+.modal-delete .btn-delete:hover{
+  background-color: red;
+}
 /* Close button */
 .close {
   color: #78c2ff; /* Couleur verte */
@@ -196,16 +223,81 @@
 .reglement {
   color: #9B59B6; /* Couleur pour Mode de Règlement */
 }
-.modal-delete button{
-  background-color: #27AE60;
-  width: 20%;
-  padding: 1%;
+.actions{
+  display: flex;
+  justify-content: space-around;
 }
-.modal-delete button:hover{
-  background-color: red;
-  padding: 1.2%;
+.actions svg{
+  padding: 3%;
 }
 
+/* Style du conteneur de l'icône et positionnement relatif pour l'infobulle */
+.tooltip {
+  position: relative;
+  display: inline-block;
+  cursor: pointer;
+}
+
+/* Style de l'infobulle cachée */
+.tooltip .tooltiptext {
+  visibility: hidden;
+  width: auto; /* Adjust width based on content */
+  background-color:white;
+  color: black;
+  text-align: center;
+  border-radius: 6px;
+  padding: 5px;
+  
+  /* Positionnement */
+  position: absolute;
+  z-index: 1;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  
+  /* Fade-in */
+  opacity: 0;
+  transition: opacity 0.5s;
+}
+
+/* Flèche sous l'infobulle */
+.tooltip .tooltiptext::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  margin-left: -5px;
+  border-width: 5px;
+  border-style: solid;
+  border-color: black transparent transparent transparent;
+}
+
+/* Afficher l'infobulle lors du survol */
+.tooltip:hover .tooltiptext {
+  visibility: visible;
+  opacity: 1;
+}
+
+.modal-item {
+  margin-bottom: 10px;
+}
+
+.modal-item label {
+  display: flex;
+  margin-bottom: 5px;
+}
+
+.modal-item input {
+  width: 80%;
+  padding: 8px;
+  box-sizing: border-box;
+}
+.modal button{
+  padding: 1%;
+  margin-top: 3%;
+  margin-left: 40%;
+  width: 30% ;
+}
 /* Media query pour rendre la modal responsive */
 @media (max-width: 768px) {
   .modal-item {
@@ -222,5 +314,16 @@
   }
   .modal-content {
     margin-top: 20%;
+  }
+  .modal-delete {
+    margin-left:0%;
+    width: 100%; 
+  }
+  .modal-delete .modal-content {
+    margin-top: 40%;
+    width: 80%;
+  }
+  .btns{
+    display: flex;
   }
 }
