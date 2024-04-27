@@ -169,3 +169,12 @@ th, td {
     margin-right: 10px;
   }
 }
+
+
+
+.error {
+  color: red; /* Pour les messages d'erreur */
+  font-size: 0.8rem;
+}
+
+

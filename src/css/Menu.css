@@ -21,6 +21,7 @@ body{
     height: 100vh;
     background: var(--body-color);
 }
+
 .sidebar {
     position: fixed;
     top: 0;
@@ -80,7 +81,9 @@ body{
     background-color: green;
     margin-right: 3%;
 }
-
+.Menu .Infos-css{
+    width: 100%;
+}
 .Menu .Infos-css small{
     display: flex;
     flex-direction: row;
@@ -141,6 +144,11 @@ body{
 
 .sidebar li a{
     color: #ffffff;
+}
+
+.Mode{
+    font-size: 15px;
+    margin-left: 7%;
 }
 
 .Menu .Mode-Deconnexion i{

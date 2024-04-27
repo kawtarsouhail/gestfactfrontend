@@ -113,17 +113,19 @@ button:hover {
 
 .input-container input,
 .input-container select {
-  width: 100%; /* Assurez-vous que tous les inputs ont la même largeur */
+  width: 100%; /* Assurez-vous que tous les éléments aient la même largeur */
   padding: 10px;
   border: 1px solid #ccc; /* Ajoutez une bordure pour un design cohérent */
   border-radius: 5px;
 }
+
 .input-container input:focus,
 .input-container select:focus {
-  border-color: #007bff; /* Changer la couleur de la bordure lorsqu'un input est cliqué */
-  box-shadow: 0 0 5px rgba(0, 123, 255, 0.5); /* Ajouter une ombre autour de l'input lorsqu'il est cliqué */
-  outline: none; /* Supprimer la bordure autour de l'input par défaut */
+  border-color: #007bff; /* Changer la couleur de la bordure lorsqu'un élément est activé */
+  box-shadow: 0 0 5px rgba(0, 123, 255, 0.5); /* Ajouter une ombre autour de l'élément lorsqu'il est activé */
+  outline: none; /* Supprimer la bordure autour de l'élément par défaut */
 }
+
 
 
 /* Media query pour les écrans moyens */
