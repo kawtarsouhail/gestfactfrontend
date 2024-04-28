@@ -15,20 +15,19 @@ const GestionCompte = () => {
   const [errors, setErrors] = useState({}); 
 
     const handleBoxClick = (boxId) => {
-    setActiveBoxId(boxId);  // Sets the active box ID
+    setActiveBoxId(boxId);  
 
     if (boxId === 'create') {
         setTableVisible(false);
-        setFormVisible(true);  // Shows the form when a box is clicked
+        setFormVisible(true);  
     } else if (boxId === 'manage') {
         setFormVisible(false);
-        setTableVisible(true);  // Assumes there is a similar hook for table visibility
+        setTableVisible(true);  
     }
-    // No need for an else block if there are no other actions to perform
     };
 
     const handleItemsPerPageChange = (e) => {
-        setItemsPerPage(parseInt(e.target.value)); // Convertir la valeur en nombre entier
+        setItemsPerPage(parseInt(e.target.value)); 
       };
 
       useEffect(() => {

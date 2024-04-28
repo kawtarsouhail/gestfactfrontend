@@ -1,13 +1,26 @@
-// export default Invoice;
 import React, { useState } from 'react';
-import '../css/invoice.css'; // Assurez-vous de créer un fichier Form.css pour les styles
-
+import '../css/invoice.css'; 
+import axios from 'axios';
 const Invoice = () => {
   const [formData, setFormData] = useState({
+    NumFacture: '',
+    NomClient: '',
+    NumBonLiv: '',
+    NomEmetteur: '',
+    dateBonLiv: '',
+    TypeValidation: '',
+    MontantHT: '',
+    DateFacture: '',
+    Taux: '',
+    TVA: '',
+    MontantTTC: '',
+    TypeContrat: '',
+    EtabliPar: '',
+    EtaPayement: '',
+    ModeReg: '',
+    NumCheque: '',
     NumRemise: '',
-    NumeCHeque: '',
-    modeReglement: '',
-    montantEncaisse: ''
+    MontantEnc: ''
   });
 
   const handleChange = (e) => {
@@ -18,33 +31,60 @@ const Invoice = () => {
     }));
   };
 
-  const handleSubmit = (e) => {
+  // const handleSubmit = (e) => {
+  //   e.preventDefault();
+  //   console.log(formData);
+  // };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log(formData);
+    try {
+      const response = await axios.post('http://localhost:8000/api/enregistrerFacture', formData);
+      console.log(response.data);
+      setFormData({
+        NumFacture: '',
+        NomClient: '',
+        NumBonLiv: '',
+        NomEmetteur:'',
+        dateBonLiv: '',
+        TypeValidation: '',
+        MontantHT: '',
+        DateFacture: '',
+        Taux: '',
+        TVA: '',
+        MontantTTC: '',
+        TypeContrat: '',
+        EtabliPar: '',
+        EtaPayement: '',
+        ModeReg: '',
+        NumCheque: '',
+        NumRemise: '',
+        MontantEnc: ''
+      });
+    } catch (error) {
+      console.error('Erreur lors de l\'enregistrement de la facture:', error);
+    }
   };
 
-  // Tableau de configuration des champs
   const fieldsConfig = [
-    { label: 'Nº de Facture', type: 'number' },
-    { label: 'Nom Client', type: 'text',  },
-    { label: 'Nº Bon de livraison', type: 'number' },
-    { label: 'Date de Livraison', type: 'date' },
-    { label: 'Type de validation', type: 'select', options: ['[Choisir Type de validation ]','WhatsApp', 'Bon de Commande', 'Bon accord'] },
-    { label: 'Montant HT', type: 'number' },
-    { label: 'Date de Facture', type: 'date' },
-    { label: 'Taux', type: 'number' },
-    { label: 'TVA', type: 'number' },
-    { label: 'Montant TTC', type: 'number' },
-    { label: 'EMETTEUR', type: 'select', options: ['[Choisir Emetteur ]','Contract', 'Ponctuel']  },
-    { label: 'Type de Contract', type: 'select', options: ['[Choisir Type de contrat ]','Contract', 'Ponctuel'] },
-    { label: 'Etablit Par', type: 'text' },
-    { label: 'PAYEE / IMPAYEE', type: 'select', options: ['[Choisir Etat de payement]','PAYEE', 'IMPAYEE'] },
-    { name: 'modeReglement', label: 'MODE DE REGLEMENT', type: 'select', options: ['[MODE DE REGLEMENT]', 'ESPÈCE', 'CHÈQUE', 'VIREMENT', 'PAR EFFET'] },
-    { name: 'NumeCHeque', label: 'N° Chèque', type: 'text' },
-    { name: 'NumRemise', label: 'N° Remise', type: 'text' },
-    { name: 'montantEncaisse', label: 'MONTANT ENCAISSÉ', type: 'number' }
-
-
+    { label: 'Nº de Facture', type: 'text', name: 'NumFacture' },
+    { label: 'Nom Client', type: 'text', name: 'NomClient' },
+    { label: 'Nº Bon de livraison', type: 'text', name: 'NumBonLiv' },
+    { label: 'Date de Livraison', type: 'date', name: 'dateBonLiv' },
+    { label: 'Type de validation', type: 'select', name: 'TypeValidation', options: ['[Choisir Type de validation ]', 'WhatsApp', 'Bon de Commande', 'Bon accord'] },
+    { label: 'Montant HT', type: 'number', name: 'MontantHT' },
+    { label: 'Date de Facture', type: 'date', name: 'DateFacture' },
+    { label: 'Taux', type: 'number', name: 'Taux' },
+    { label: 'TVA', type: 'number', name: 'TVA' },
+    { label: 'Montant TTC', type: 'number', name: 'MontantTTC' },
+    { label: 'EMETTEUR', type: 'select', name: 'NomEmetteur', options: ['[Choisir Emetteur ]', 'Contract', 'Ponctuel'] },
+    { label: 'Type de Contract', type: 'select', name: 'TypeContrat', options: ['[Choisir Type de contrat ]', 'Contract', 'Ponctuel'] },
+    { label: 'Etablit Par', type: 'text', name: 'EtabliPar' },
+    { label: 'PAYEE / IMPAYEE', type: 'select', name: 'EtaPayement', options: ['[Choisir Etat de payement]', 'PAYEE', 'IMPAYEE'] },
+    { label: 'MODE DE REGLEMENT', type: 'select', name: 'ModeReg', options: ['[MODE DE REGLEMENT]', 'ESPÈCE', 'CHÈQUE', 'VIREMENT', 'PAR EFFET'] },
+    { label: 'N° Chèque', type: 'text', name: 'NumCheque' },
+    { label: 'N° Remise', type: 'text', name: 'NumRemise' },
+    { label: 'MONTANT ENCAISSÉ', type: 'number', name: 'MontantEnc' }
   ];
   return (
     <div className='invoice'>
@@ -54,8 +94,8 @@ const Invoice = () => {
           {fieldsConfig.map((field, index) => (
             <div key={index} className='item' style={{
                 display:
-                  (field.name === 'NumeCHeque' || field.name === 'NumRemise' || field.name === 'montantEncaisse') &&
-                  formData.modeReglement !== 'CHÈQUE' ? 'none' : ''
+                  (field.name === 'NumCheque' || field.name === 'NumRemise' || field.name === 'MontantEnc') &&
+                  formData.ModeReg !== 'CHÈQUE' ? 'none' : ''
             }}>
               <label htmlFor={field.name}>{field.label}</label>
               {field.type === 'select' ? (
