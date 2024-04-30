@@ -1,19 +1,57 @@
 import React, { useState } from 'react';
 import '../../css/Table.css'; // Import custom CSS file for styling
+import axios from 'axios';
+
 
 const TableUsers= ({ data: initialData, itemsPerPage }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedRow, setSelectedRow] = useState(null);
   const [rowToDelete, setRowToDelete] = useState(null);
   const [data, setData] = useState(initialData);
+  const baseURL = 'http://localhost:8000/api'; 
 
   const [formData, setFormData] = useState({
     name: '',
     email: '',
     role: '',
     password: '',
-    confirmPassword: ''
+ password_confirmation: ''
   });
+  
+  const handleShowModal = (rowData) => {
+    setSelectedRow(rowData);
+    setFormData({
+      name: rowData.name,
+      email: rowData.email,
+      role: rowData.role,
+      password: '',  
+   password_confirmation: ''
+    });
+  };
+ 
+  
+  const deleteUser = async (id) => {
+    try {
+      const response = await axios.delete(`${baseURL}/supprimer/${id}`);
+      return response.data;
+    } catch (error) {
+      console.error('Failed to delete user:', error);
+      throw error;
+    }
+  };
+  
+  const handleDeleteRow = async () => {
+    try {
+      await deleteUser(rowToDelete.id); 
+      setData(data.filter(item => item.id !== rowToDelete.id)); 
+      setRowToDelete(null); 
+    } catch (error) {
+      console.error('Failed to delete user:', error);
+    }
+  };
+  
+  
+ 
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -22,39 +60,61 @@ const TableUsers= ({ data: initialData, itemsPerPage }) => {
       [name]: value
     }));
   };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    if (formData.password !== formData.confirmPassword) {
-      alert("Passwords do not match!");
-      return;
+  
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  if (formData.password !== formData.password_confirmation) {
+    alert("Les mots de passe ne correspondent pas!");
+    return;
+  }
+  try {
+    const updatedData = {
+      name: formData.name,
+      email: formData.email,
+      role: formData.role,
+      password: formData.password ,
+      password_confirmation: formData.password_confirmation ,
+    };
+    const response = await axios.put(`${baseURL}/modifier/${selectedRow.id}`, updatedData);
+    if (response.data) {
+      // Mettre à jour les données dans le tableau ou notifier l'utilisateur du succès
+      handleCloseModal();
+      console.log("Utilisateur mis à jour avec succès: ", response.data);
     }
-    // Process the form data here
-    console.log(formData);
-    handleCloseModal();
-  };
-
-
+  } catch (error) {
+    console.error('Échec de mise à jour de l’utilisateur: ', error.response.data);
+  }
+};
+// Ajouter cette fonction pour mettre à jour le champ du mot de passe lorsque l'utilisateur le modifie
+// const handlePasswordChange = (e) => {
+//   const { name, value } = e.target;
+//   setFormData(prevState => ({
+//     ...prevState,
+//     [name]: value
+//   }));
+// };
   const totalPages = Math.ceil(data.length / itemsPerPage);
 
   const handleChangePage = (page) => {
     setCurrentPage(page);
   };
 
-  const handleShowModal = (rowData) => {
-    setSelectedRow(rowData);
-  };
-
+ 
   const handleCloseModal = () => {
     setSelectedRow(null);
-  };
-
-  const handleDeleteRow = () => {
-    // Implémentez la logique de suppression ici, par exemple:
-    setData(data.filter(item => item !== rowToDelete));
-    setRowToDelete(null); // Fermer le modal après suppression
+    setFormData({
+      name: '',
+      email: '',
+      role: '',
+      password: '',
+      password_confirmation: ''
+    });
   };
   
+  // const handleCloseModal = () => {
+  //   setSelectedRow(null);
+  // };
+
   const handleShowDeleteModal = (item) => {
     setRowToDelete(item);
   };  
@@ -171,6 +231,19 @@ const TableUsers= ({ data: initialData, itemsPerPage }) => {
                 />
               </div>
               <div className="modal-item">
+                <label>Role:</label>
+                <select
+                  name="role"
+                  value={formData.role}
+                  onChange={handleChange}
+                >
+                  <option value="" disabled selected>Choose a role</option>
+                  <option value="Super Admin">Super Admin</option>
+                  <option value="Admin">Admin</option>
+                  <option value="Utilisateur">Utilisateur</option>
+                </select>
+              </div>
+              <div className="modal-item">
                 <label>Mot de passe:</label>
                 <input
                   type="password"
@@ -184,8 +257,8 @@ const TableUsers= ({ data: initialData, itemsPerPage }) => {
                 <label>Confirmer Mot de passe:</label>
                 <input
                   type="password"
-                  name="confirmPassword"
-                  value={formData.confirmPassword}
+                  name="password_confirmation"
+                  value={formData.password_confirmation}
                   onChange={handleChange}
                   required
                 />

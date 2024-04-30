@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import '../css/invoice.css'; 
 import axios from 'axios';
+import Swal from 'sweetalert2';
+
 const Invoice = () => {
   const [formData, setFormData] = useState({
     NumFacture: '',
@@ -36,11 +38,17 @@ const Invoice = () => {
   //   console.log(formData);
   // };
 
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       const response = await axios.post('http://localhost:8000/api/enregistrerFacture', formData);
       console.log(response.data);
+      Swal.fire({
+        icon: 'success',
+        title: 'Enregistrement réussi',
+        text: 'Les données ont été enregistrées avec succès.'
+      });
       setFormData({
         NumFacture: '',
         NomClient: '',
@@ -63,9 +71,14 @@ const Invoice = () => {
       });
     } catch (error) {
       console.error('Erreur lors de l\'enregistrement de la facture:', error);
+      Swal.fire({
+        icon: 'error',
+        title: 'Erreur',
+        text: 'Une erreur est survenue lors de l\'enregistrement des données. Veuillez réessayer.'
+      });
     }
   };
-
+  
   const fieldsConfig = [
     { label: 'Nº de Facture', type: 'text', name: 'NumFacture' },
     { label: 'Nom Client', type: 'text', name: 'NomClient' },

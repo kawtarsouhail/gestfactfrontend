@@ -14,7 +14,7 @@ const Visualiser = () => {
   }
 
   const handleItemsPerPageChange = (e) => {
-    setItemsPerPage(parseInt(e.target.value)); // Convertir la valeur en nombre entier
+    setItemsPerPage(parseInt(e.target.value)); 
   };  
 
   const renderInputOrSelect = () => {

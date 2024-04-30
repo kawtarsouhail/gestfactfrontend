@@ -1,6 +1,6 @@
 import React, {useEffect, useState } from 'react';
 import '../../css/Table.css'; // Import custom CSS file for styling
-
+import axios from 'axios';
 const TableWithData = ({ data: initialData, itemsPerPage }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedRow, setSelectedRow] = useState(null);
@@ -13,6 +13,26 @@ const TableWithData = ({ data: initialData, itemsPerPage }) => {
       .then(data => setData(data.donnees))
       .catch(error => console.error('Error fetching data:', error));
   }, []);
+
+
+  const deleteFacture = async (id) => {
+    try {
+      const response = await axios.delete(`http://localhost:8000/api/deleteFacture/${id}`);
+      return response.data;
+    } catch (error) {
+      console.error('Failed to delete Invoice:', error);
+      throw error;
+    }
+  };
+  const handleDeleteRow = async () => {
+    try {
+      await deleteFacture(rowToDelete.id); 
+      setData(data.filter(item => item.id !== rowToDelete.id)); 
+      setRowToDelete(null); 
+    } catch (error) {
+      console.error('Failed to delete Invoice:', error);
+    }
+  };
 
   const totalPages = Math.ceil(data.length / itemsPerPage);
 
@@ -28,11 +48,11 @@ const TableWithData = ({ data: initialData, itemsPerPage }) => {
     setSelectedRow(null);
   };
 
-  const handleDeleteRow = () => {
-    // Implémentez la logique de suppression ici, par exemple:
-    setData(data.filter(item => item !== rowToDelete));
-    setRowToDelete(null); // Fermer le modal après suppression
-  };
+  // const handleDeleteRow = () => {
+  //   // Implémentez la logique de suppression ici, par exemple:
+  //   setData(data.filter(item => item !== rowToDelete));
+  //   setRowToDelete(null); // Fermer le modal après suppression
+  // };
   
   const handleShowDeleteModal = (item) => {
     setRowToDelete(item);
@@ -63,7 +83,7 @@ const TableWithData = ({ data: initialData, itemsPerPage }) => {
       <tr key={startIndex + index}>
         <td>{item.NumFacture}</td>
         <td>{item.client.NomClient}</td>
-        <td>{item.NumBonLiv}</td>
+        <td>{item.bon_livraison.NumBonLiv}</td>
         <td>{item.bon_livraison.TypeValidation}</td>
         <td>{item.ModeReg}</td>
         <td>
@@ -136,7 +156,7 @@ const TableWithData = ({ data: initialData, itemsPerPage }) => {
             <p>Nom Client: <span className="client">{selectedRow.client.NomClient}</span></p>
           </div>
           <div className="modal-item">
-            <p>Nº Bon de livraison: <span className="bon">{selectedRow.NumBonLiv}</span></p>
+            <p>Nº Bon de livraison: <span className="bon">{selectedRow.bon_livraison.NumBonLiv}</span></p>
           </div>
           <div className="modal-item">
             <p>Type de validation: <span className="validation">{selectedRow.bon_livraison.TypeValidation}</span></p>
@@ -172,13 +192,13 @@ const TableWithData = ({ data: initialData, itemsPerPage }) => {
             <p>EtaPayement: <span className="reglement">{selectedRow.EtaPayement}</span></p>
           </div>
           <div className="modal-item">
-            <p>Numero de Cheque: <span className="reglement">{ selectedRow && selectedRow.NumCheque !== null ? selectedRow.NumCheque : 'null'}</span></p>
+              <p>Numero de Cheque: <span className="reglement">{selectedRow?.cheque?.NumCheque ?? 'null'}</span></p>
           </div>
           <div className="modal-item">
-            <p>Numero de Remise: <span className="reglement">{selectedRow && selectedRow.NumRemise !== null ? selectedRow.NumRemise : 'null'}</span></p>
+              <p>Numero de Remise: <span className="reglement">{selectedRow?.remise?.NumRemise ?? 'null'}</span></p>
           </div>
           <div className="modal-item">
-            <p>Montant Encaissé: <span className="reglement">{selectedRow && selectedRow.NumRemise && selectedRow.remise.MontantEnc !== null ? selectedRow.remise.MontantEnc : 'null'}</span></p>
+              <p>Montant Encaissé: <span className="reglement">{selectedRow?.remise?.MontantEnc ?? 'null'}</span></p>
           </div>
         </div>
 

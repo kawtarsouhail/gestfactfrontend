@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState,useEffect } from 'react';
 import '../../css/Table.css'; // Import custom CSS file for styling
+import axios from 'axios';
 
 const TableWithData = ({ data: initialData, itemsPerPage }) => {
   const [currentPage, setCurrentPage] = useState(1);
@@ -7,9 +8,35 @@ const TableWithData = ({ data: initialData, itemsPerPage }) => {
   const [rowToDelete, setRowToDelete] = useState(null);
   const [data, setData] = useState(initialData);
 
-
+  useEffect(() => {
+    fetch('http://localhost:8000/api/getFacture')
+      .then(response => response.json())
+      .then(data => {
+        const filteredData = data.donnees.filter(facture => facture.ModeReg === 'CHÈQUE' || facture.ModeReg === 'ESPÈCE');
+        setData(filteredData);
+      })
+      .catch(error => console.error('Error fetching data:', error));
+  }, []);
+  
   const totalPages = Math.ceil(data.length / itemsPerPage);
-
+  const deleteFacture = async (id) => {
+    try {
+      const response = await axios.delete(`http://localhost:8000/api/deleteFacture/${id}`);
+      return response.data;
+    } catch (error) {
+      console.error('Failed to delete Invoice:', error);
+      throw error;
+    }
+  };
+  const handleDeleteRow = async () => {
+    try {
+      await deleteFacture(rowToDelete.id); 
+      setData(data.filter(item => item.id !== rowToDelete.id)); 
+      setRowToDelete(null); 
+    } catch (error) {
+      console.error('Failed to delete Invoice:', error);
+    }
+  };
   const handleChangePage = (page) => {
     setCurrentPage(page);
   };
@@ -22,12 +49,6 @@ const TableWithData = ({ data: initialData, itemsPerPage }) => {
     setSelectedRow(null);
   };
 
-  const handleDeleteRow = () => {
-    // Implémentez la logique de suppression ici, par exemple:
-    setData(data.filter(item => item !== rowToDelete));
-    setRowToDelete(null); // Fermer le modal après suppression
-  };
-  
   const handleShowDeleteModal = (item) => {
     setRowToDelete(item);
   };  
@@ -55,11 +76,11 @@ const TableWithData = ({ data: initialData, itemsPerPage }) => {
     const endIndex = startIndex + itemsPerPage;
     return data.slice(startIndex, endIndex).map((item, index) => (
       <tr key={startIndex + index}>
-        <td>{item.column1}</td>
-        <td>{item.column2}</td>
-        <td>{item.column3}</td>
-        <td>{item.column4}</td>
-        <td>{item.column5}</td>
+        <td>{item.NumFacture}</td>
+        <td>{item.client.NomClient}</td>
+        <td>{item.bon_livraison.NumBonLiv}</td>
+        <td>{item.bon_livraison.TypeValidation}</td>
+        <td>{item.ModeReg}</td>
         <td>
           <div className='actions'>
             <span class="tooltip">
@@ -123,44 +144,56 @@ const TableWithData = ({ data: initialData, itemsPerPage }) => {
         <span className="close" onClick={handleCloseModal}>&times;</span>
         <h2>Details</h2>
         <div className='modal-items'>
-        <div className="modal-item">
-            <p>Nº de Facture: <span className="facture">{selectedRow.column1}</span></p>
+          <div className="modal-item">
+            <p>Nº de Facture: <span className="facture">{selectedRow.NumFacture}</span></p>
           </div>
           <div className="modal-item">
-            <p>Nom Client: <span className="client">{selectedRow.column2}</span></p>
+            <p>Nom Client: <span className="client">{selectedRow.client.NomClient}</span></p>
           </div>
           <div className="modal-item">
-            <p>Nº De Cheque: <span className="bon">{selectedRow.column3}</span></p>
+            <p>Nº Bon de livraison: <span className="bon">{selectedRow.bon_livraison.NumBonLiv}</span></p>
           </div>
           <div className="modal-item">
-            <p>Nº De Remise: <span className="validation">{selectedRow.column4}</span></p>
+            <p>Type de validation: <span className="validation">{selectedRow.bon_livraison.TypeValidation}</span></p>
           </div>
           <div className="modal-item">
-            <p>Montant Encaisse: <span className="reglement">{selectedRow.column5}</span></p>
+            <p>Date de Bon Livraison: <span className="validation">{selectedRow.bon_livraison.dateBonLiv}</span></p>
           </div>
           <div className="modal-item">
-            <p>Mode de Règlement: <span className="reglement">{selectedRow.column7}</span></p>
+            <p>Mode de Règlement: <span className="reglement">{selectedRow.ModeReg}</span></p>
           </div>
           <div className="modal-item">
-            <p>Mode de Règlement: <span className="reglement">{selectedRow.column8}</span></p>
+            <p>Date de Facture: <span className="reglement">{selectedRow.DateFacture}</span></p>
           </div>
           <div className="modal-item">
-            <p>Mode de Règlement: <span className="reglement">{selectedRow.column9}</span></p>
+            <p>Montant HT: <span className="reglement">{selectedRow.MontantHT}</span></p>
           </div>
           <div className="modal-item">
-            <p>Mode de Règlement: <span className="reglement">{selectedRow.column10}</span></p>
+            <p>Taux: <span className="reglement">{selectedRow.Taux}</span></p>
           </div>
           <div className="modal-item">
-            <p>Mode de Règlement: <span className="reglement">{selectedRow.column11}</span></p>
+            <p>TVA: <span className="reglement">{selectedRow.TVA}</span></p>
           </div>
           <div className="modal-item">
-            <p>Mode de Règlement: <span className="reglement">{selectedRow.column12}</span></p>
+            <p>Montant TTC: <span className="reglement">{selectedRow.MontantTTC}</span></p>
           </div>
           <div className="modal-item">
-            <p>Mode de Règlement: <span className="reglement">{selectedRow.column13}</span></p>
+            <p>Type de Contrat: <span className="reglement">{selectedRow.TypeContrat}</span></p>
           </div>
           <div className="modal-item">
-            <p>Mode de Règlement: <span className="reglement">{selectedRow.column13}</span></p>
+            <p>EtabliPar: <span className="reglement">{selectedRow.EtabliPar}</span></p>
+          </div>
+          <div className="modal-item">
+            <p>EtaPayement: <span className="reglement">{selectedRow.EtaPayement}</span></p>
+          </div>
+          <div className="modal-item">
+              <p>Numero de Cheque: <span className="reglement">{selectedRow?.cheque?.NumCheque ?? 'null'}</span></p>
+          </div>
+          <div className="modal-item">
+              <p>Numero de Remise: <span className="reglement">{selectedRow?.remise?.NumRemise ?? 'null'}</span></p>
+          </div>
+          <div className="modal-item">
+              <p>Montant Encaissé: <span className="reglement">{selectedRow?.remise?.MontantEnc ?? 'null'}</span></p>
           </div>
         </div>
 
@@ -176,9 +209,9 @@ const TableWithData = ({ data: initialData, itemsPerPage }) => {
           <tr>
             <th>Nº de Facture</th>
             <th>Nom Client</th>
-            <th>Nº De Cheque</th>
-            <th>Nº De Remise</th>
-            <th>Montant Encaisse</th>
+            <th>Nº Bon de livraison</th>
+            <th>Type de validation</th>
+            <th>Mode de Règlement</th>
             <th>Action</th>
           </tr>
         </thead>
