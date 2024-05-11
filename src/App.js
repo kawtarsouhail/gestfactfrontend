@@ -74,9 +74,26 @@
 // export default App;
 
 // App.js
+
+
+// import React from 'react';
+// import { RouterProvider } from "react-router-dom";
+// import { AuthProvider } from './ProtectionComponent/auth-context'; // Ensure correct import path
+// import { router } from "./ProtectionComponent/router";  // Adjust the path if your file is named differently or located elsewhere
+
+// function App() {
+//     return (
+//         <AuthProvider>
+//             <RouterProvider router={router} />
+//         </AuthProvider>
+//     );
+// }
+
+// export default App;
+
 import React from 'react';
 
-import { router } from './Components/Router/router';
+import { router } from './Components/router/router';
 import { RouterProvider } from 'react-router-dom'; 
 function App() {
   return (
@@ -87,5 +104,4 @@ function App() {
   );
 }
 
-export default App;
-
+export default App;

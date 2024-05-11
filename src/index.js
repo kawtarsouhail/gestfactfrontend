@@ -19,7 +19,6 @@ import ReactDOM from 'react-dom';
 import App from './App'; // Ensure this path matches the location of your App.js file
 
 ReactDOM.createRoot(document.getElementById('root')).render(
-    <React.StrictMode>
         <App />
-    </React.StrictMode>
+
 );

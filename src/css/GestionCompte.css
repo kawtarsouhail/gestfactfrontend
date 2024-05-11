@@ -33,6 +33,7 @@
 .box:hover {
   transform: scale(1.05); /* Effet de zoom au survol */
   background-color: #d1d1d1; /* Changement de couleur de fond au survol */
+  cursor: pointer;
 }
 
 .active {
@@ -184,6 +185,20 @@
     background-color: #e2e2e2;
 }
 
+.input-error {
+    border: 1px solid red !important;
+}
+
+.errorIdentical{
+    color: red ;
+    font-size: smaller;
+    width: 80%;
+    text-align: start;
+}
+.swal2-confirm {
+    width: 70px !important;  /* ou toute autre largeur selon vos besoins */
+  }
+  
 
 @media (min-width: 1072px) {
     .GestionCompte {
@@ -232,4 +247,9 @@
     height: 150px; /* Hauteur ajustée pour les très petits écrans */
     font-size: 14px; /* Ajustement de la taille de la police */
   }
+}
+
+
+.inputUpdate{
+    width: 60%;
 }

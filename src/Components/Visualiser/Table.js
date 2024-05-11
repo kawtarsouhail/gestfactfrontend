@@ -1,38 +1,59 @@
-import React, {useEffect, useState } from 'react';
+import React, { useState , useEffect} from 'react';
 import '../../css/Table.css'; // Import custom CSS file for styling
-import axios from 'axios';
+import axios from '../router/axiosInstance';
+import Swal from 'sweetalert2';
+import { getToken } from '../router/auth';
+
+
+
 const TableWithData = ({ data: initialData, itemsPerPage }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedRow, setSelectedRow] = useState(null);
   const [rowToDelete, setRowToDelete] = useState(null);
   const [data, setData] = useState(initialData);
+  const [role, setRole] = useState(null); 
+  const [error, setError] = useState(null); 
+  const [userCanDelete, setUserCanDelete] = useState(true);
 
+
+  
   useEffect(() => {
-    fetch('http://localhost:8000/api/getFacture')
-      .then(response => response.json())
-      .then(data => setData(data.donnees))
-      .catch(error => console.error('Error fetching data:', error));
+    const fetchUser = async () => {
+      try {
+        const token = getToken();
+
+        if (token) {
+          const response = await axios.get('http://localhost:8000/api/user', {
+          });
+          setRole(response.data.role);
+        }
+      } catch (error) {
+        setError(error);
+      }
+    };
+
+    fetchUser();
   }, []);
 
+  useEffect(() => {
+    if (role === 'Super Admin' || role === 'Admin') {
+      setUserCanDelete(true);
+    } else if (role === 'Utilisateur') {
+      setUserCanDelete(false);
+    } else {
+      console.error('Unknown role');
+    }
+  }, [role]);
 
-  const deleteFacture = async (id) => {
-    try {
-      const response = await axios.delete(`http://localhost:8000/api/deleteFacture/${id}`);
-      return response.data;
-    } catch (error) {
-      console.error('Failed to delete Invoice:', error);
-      throw error;
-    }
-  };
-  const handleDeleteRow = async () => {
-    try {
-      await deleteFacture(rowToDelete.id); 
-      setData(data.filter(item => item.id !== rowToDelete.id)); 
-      setRowToDelete(null); 
-    } catch (error) {
-      console.error('Failed to delete Invoice:', error);
-    }
-  };
+  useEffect(() => {
+    setData(initialData);
+  }, [initialData]);
+
+
+
+  useEffect(() => {
+    setData(initialData);
+  }, [initialData]);
 
   const totalPages = Math.ceil(data.length / itemsPerPage);
 
@@ -48,11 +69,54 @@ const TableWithData = ({ data: initialData, itemsPerPage }) => {
     setSelectedRow(null);
   };
 
-  // const handleDeleteRow = () => {
-  //   // Implémentez la logique de suppression ici, par exemple:
-  //   setData(data.filter(item => item !== rowToDelete));
-  //   setRowToDelete(null); // Fermer le modal après suppression
-  // };
+  const handleDeleteRow = async () => {
+    if (!rowToDelete) {
+      console.error('No row selected for deletion');
+      return;
+    }
+    
+  
+    const apiUrl = `http://localhost:8000/api/deleteFacture/${rowToDelete.id}`; // Adjust the URL to your actual API endpoint
+    try {
+      const response = await axios.delete(apiUrl);
+  
+      if (response.status!==200) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+  
+      // Optionally, parse the response if you expect any message/data back from your server
+      const result = await response;
+      console.log('Delete successful:', result);
+  
+      // Update the data in the state to reflect the change
+      setData(data.filter(item => item.id !== rowToDelete.id));
+  
+      // Swal success alert
+      Swal.fire({
+        icon: 'success',
+        title: 'Supprimé !',
+        text: ' a été supprimé.',
+        confirmButtonColor: '#3085d6',
+        confirmButtonText: 'OK'
+      });
+  
+      // Reset the selected row to delete
+      setRowToDelete(null);
+  
+    } catch (error) {
+      console.error('Failed to delete the row:', error);
+      // Swal error alert
+      Swal.fire({
+        icon: 'error',
+        title: 'Error!',
+        text: 'Failed to delete the record.',
+        confirmButtonColor: '#d33',
+        confirmButtonText: 'OK'
+      });
+    }
+  };
+  
+  
   
   const handleShowDeleteModal = (item) => {
     setRowToDelete(item);
@@ -92,10 +156,12 @@ const TableWithData = ({ data: initialData, itemsPerPage }) => {
               <svg onClick={() => handleShowModal(item)}  xmlns="http://www.w3.org/2000/svg" width="1.5em" height="1.5em" viewBox="0 0 32 32"><g fill="none"><rect width={28} height={28} x={2} y={2} fill="#00a6ed" rx={4}></rect><path fill="#fff" d="M16 9.971a1.978 1.978 0 1 0 0-3.956a1.978 1.978 0 0 0 0 3.956m1.61 3.747a1.75 1.75 0 1 0-3.5 0v10.59a1.75 1.75 0 1 0 3.5 0z"></path></g></svg>
               <span class="tooltiptext">Plus d'infos</span>
             </span>
+            {userCanDelete && (
             <span class="tooltip">
               <svg onClick={() => handleShowDeleteModal(item)}  xmlns="http://www.w3.org/2000/svg" width="1.6em" height="1.6em" viewBox="0 0 24 24"><path fill="#00a6ed" d="M12 2c5.53 0 10 4.47 10 10s-4.47 10-10 10S2 17.53 2 12S6.47 2 12 2m5 5h-2.5l-1-1h-3l-1 1H7v2h10zM9 18h6a1 1 0 0 0 1-1v-7H8v7a1 1 0 0 0 1 1"></path></svg>
               <span class="tooltiptext">Supprimer</span>
             </span>
+          )}
           </div>
         </td>
       </tr>
@@ -150,55 +216,64 @@ const TableWithData = ({ data: initialData, itemsPerPage }) => {
         <h2>Details</h2>
         <div className='modal-items'>
           <div className="modal-item">
-            <p>Nº de Facture: <span className="facture">{selectedRow.NumFacture}</span></p>
+            <p>Nº de Facture: <span className="facture">{selectedRow.NumFacture ?? 'null'}</span></p>
           </div>
           <div className="modal-item">
-            <p>Nom Client: <span className="client">{selectedRow.client.NomClient}</span></p>
+            <p>Nom Client: <span className="client">{selectedRow.client?.NomClient ?? 'null'}</span></p>
           </div>
           <div className="modal-item">
-            <p>Nº Bon de livraison: <span className="bon">{selectedRow.bon_livraison.NumBonLiv}</span></p>
+            <p>Nº Bon de livraison: <span className="bon">{selectedRow.bon_livraison?.NumBonLiv ?? 'null'}</span></p>
           </div>
           <div className="modal-item">
-            <p>Type de validation: <span className="validation">{selectedRow.bon_livraison.TypeValidation}</span></p>
+            <p>Date de Livraison:<span className="dateLiv">{selectedRow.bon_livraison?.dateBonLiv ?? 'null'}</span></p>
           </div>
           <div className="modal-item">
-            <p>Date de Bon Livraison: <span className="validation">{selectedRow.bon_livraison.dateBonLiv}</span></p>
+            <p>Type de validation: <span className="validation">{selectedRow.bon_livraison?.TypeValidation ?? 'null'}</span></p>
           </div>
           <div className="modal-item">
-            <p>Mode de Règlement: <span className="reglement">{selectedRow.ModeReg}</span></p>
+            <p>Date de validation: <span className="dateValidation">{selectedRow.bon_livraison?.dateValidation ?? 'null'}</span></p>
           </div>
           <div className="modal-item">
-            <p>Date de Facture: <span className="reglement">{selectedRow.DateFacture}</span></p>
+            <p>date Bon Commande: <span className="dateBonCommande">{selectedRow.bon_livraison?.dateBonCommande ?? 'null'}</span></p>
           </div>
           <div className="modal-item">
-            <p>Montant HT: <span className="reglement">{selectedRow.MontantHT}</span></p>
+            <p>Montant HT: <span className="MontantHT">{selectedRow.MontantHT ?? 'null'}</span></p>
           </div>
           <div className="modal-item">
-            <p>Taux: <span className="reglement">{selectedRow.Taux}</span></p>
+            <p>Date de Facture: <span className="dateFacture">{selectedRow.DateFacture ?? 'null'}</span></p>
           </div>
           <div className="modal-item">
-            <p>TVA: <span className="reglement">{selectedRow.TVA}</span></p>
+            <p>Taux: <span className="Taux">{selectedRow.Taux ?? 'null'}</span></p>
           </div>
           <div className="modal-item">
-            <p>Montant TTC: <span className="reglement">{selectedRow.MontantTTC}</span></p>
+            <p>TVA: <span className="TVA">{selectedRow.TVA ?? 'null'}</span></p>
           </div>
           <div className="modal-item">
-            <p>Type de Contrat: <span className="reglement">{selectedRow.TypeContrat}</span></p>
+            <p>Montant TTC: <span className="MontantTTC">{selectedRow.MontantTTC ?? 'null'}</span></p>
           </div>
           <div className="modal-item">
-            <p>EtabliPar: <span className="reglement">{selectedRow.EtabliPar}</span></p>
+            <p>Emetteur: <span className="reglement">{selectedRow.emetteur?.NomEmetteur ?? 'null'}</span></p>
           </div>
           <div className="modal-item">
-            <p>EtaPayement: <span className="reglement">{selectedRow.EtaPayement}</span></p>
+            <p>Type de Contract: <span className="TypeContract">{selectedRow.TypeContrat ?? 'null'}</span></p>
           </div>
           <div className="modal-item">
-              <p>Numero de Cheque: <span className="reglement">{selectedRow?.cheque?.NumCheque ?? 'null'}</span></p>
+            <p>Etablit Par: <span className="EtablitPar">{selectedRow.EtabliPar ?? 'null'}</span></p>
           </div>
           <div className="modal-item">
-              <p>Numero de Remise: <span className="reglement">{selectedRow?.remise?.NumRemise ?? 'null'}</span></p>
+            <p>PAYEE / IMPAYEE: <span className="EtatPayement">{selectedRow.EtaPayement ?? 'null'}</span></p>
           </div>
           <div className="modal-item">
-              <p>Montant Encaissé: <span className="reglement">{selectedRow?.remise?.MontantEnc ?? 'null'}</span></p>
+            <p>Numéro de Remise: <span className="NumRemise">{selectedRow.remise?.NumRemise ?? 'null'}</span></p>
+          </div>
+          <div className="modal-item">
+            <p>Numéro de Chèque: <span className="NumCheque">{selectedRow.cheque?.NumCheque ?? 'null'}</span></p>
+          </div>
+          <div className="modal-item">
+            <p>Mode de Règlement: <span className="reglement">{selectedRow.ModeReg ?? 'null'}</span></p>
+          </div>
+          <div className="modal-item">
+            <p>Montant encaisse: <span className="MontantEnc">{selectedRow.MontantEnc ?? 'null'} Dh</span></p>
           </div>
         </div>
 

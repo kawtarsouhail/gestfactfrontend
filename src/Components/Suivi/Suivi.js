@@ -1,66 +1,134 @@
-import React,{useState} from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from '../router/axiosInstance';
 import Table from './Table';
-import '../../css/Visualiser.css'
+import '../../css/Visualiser.css';
+
+
 const Suivi = () => {
-  const [filtrageItem,setItemFiltrage]=useState('Valeur:');
-  const [itemsPerPage, setItemsPerPage] = useState(5); 
-  const [payeeOrImpayee, setPayeeOrImpayee] = useState('');
+  const [filtrageItem, setItemFiltrage] = useState('Valeur :');
+  const [itemsPerPage, setItemsPerPage] = useState(5);
   const [remiseNum, setRemiseNum] = useState('');
   const [totalMontant, setTotalMontant] = useState(0);
-  const data = [];
+  const [data, setData] = useState([]);
+  const [displayData, setDisplayData] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
+
+  useEffect(() => {
+    try {
+      axios.get('http://localhost:8000/api/getFacture')
+        .then(response => {
+          setData(response.data.donnees);
+        });
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    }
+  }, []);
+
+  useEffect(() => {
+    setDisplayData(data);
+  }, [data]);
+
+  // useEffect(() => {
+  //   if (filtrageItem === 'Nº De Remise:') {
+  //     const total = displayData.reduce((acc, curr) => acc + (curr.montant || 0), 0);
+  //     setTotalMontant(total);
+  //   }
+  // }, [displayData, filtrageItem]);
 
   const handleChangefiltrage = (e) => {
-    e.preventDefault();
-    setItemFiltrage(e.target.value);
-    setRemiseNum(''); // Réinitialise lorsque l'option de filtrage change
-    setTotalMontant(0); // Réinitialise le total
+    const newFiltrageItem = e.target.value;
+    setItemFiltrage(newFiltrageItem);
+  
+    // Réinitialiser l'état de l'input de filtrage et les données affichées
+    setRemiseNum('');
+    setTotalMontant(0);
+    setDisplayData(data);
+  
+    // Si on sélectionne "Toutes les Factures", on réinitialise complètement
+    if (newFiltrageItem === 'Valeur :') {
+      setRemiseNum(''); // Assurez-vous que l'input est vidé
+    }
   };
   
-  const handleRemiseNumChange = (e) => {
-    setRemiseNum(e.target.value);
-    // Ici, vous pouvez également inclure la logique pour filtrer et calculer le total
-    calculateTotal(e.target.value);
-  };
-  
-  const calculateTotal = (remiseNum) => {
-    const filteredData = data.filter(item => item.columnX === remiseNum); // Remplacez `columnX` par la colonne réelle
-    const total = filteredData.reduce((acc, item) => acc + parseFloat(item.montant), 0); // Assurez-vous que `montant` est le champ correct
-    setTotalMontant(total);
-  };
   
 
   const handleItemsPerPageChange = (e) => {
-    setItemsPerPage(parseInt(e.target.value)); // Convertir la valeur en nombre entier
-  };  
+    setItemsPerPage(parseInt(e.target.value, 10));
+  };
+
+  const CalculMontantantTotal=(inputRemise)=>{
+    const total = data.reduce((total, item) => {
+      console.log(item); // Log each item to see its structure
+      if (String(item.remise?.NumRemise).trim().toUpperCase() === inputRemise) {
+        console.log('Match found', item);
+        return total + (item.MontantEnc || 0);
+      }
+      return total;
+    }, 0);
+    console.log('Total Calculated:', total);
+    setTotalMontant(total);
+  }
+
+  // const handleNumChequeChange = (e) => {
+  //   const inputCheque = e.target.value.toUpperCase();
+  //   setRemiseNum(inputCheque);
+  //   if (inputCheque.trim()) {
+  //     const filteredData = data.filter(item => String(item.cheque?.NumCheque) === inputCheque.trim());
+  //     setDisplayData(filteredData);
+  //   } else {
+  //     setDisplayData(data);
+  //   }
+  // };
+
+  const handleInputChange = (e) => {
+    const value = e.target.value.trim().toUpperCase();
+    setRemiseNum(value);  // Mettre à jour l'état avec la nouvelle valeur
+  
+    if (filtrageItem === 'Nº De Remise:') {
+      CalculMontantantTotal(value);
+      const filteredData = data.filter(item => String(item.remise?.NumRemise).trim().toUpperCase() === value);
+      setDisplayData(filteredData.length > 0 ? filteredData : data);
+    } else if (filtrageItem === 'Nº De Cheque :') {
+      const filteredData = data.filter(item => String(item.cheque?.NumCheque).trim().toUpperCase() === value);
+      setDisplayData(filteredData.length > 0 ? filteredData : data);
+    }
+  };
+  
 
   const renderInputOrSelect = () => {
-    if (filtrageItem === 'Nº De Remise:') {
+    if (filtrageItem === 'Nº De Remise:' || filtrageItem === 'Nº De Cheque :') {
       return (
         <input
           type="text"
           className="form-control"
-          id="remiseNumInput"
+          id="textInput"
           placeholder="Entrer Valeur"
           value={remiseNum}
-          onChange={(e) => setRemiseNum(e.target.value)}
+          onChange={handleInputChange}
+          disabled={filtrageItem === 'Valeur :'}
         />
       );
     } else {
-      // Default case: other text inputs
+      // Cette branche peut ne pas être nécessaire si aucune entrée n'est requise pour "Valeur :"
       return (
         <input
           type="text"
           className="form-control"
           id="textInput"
           placeholder="Enter value"
-          disabled={filtrageItem === 'Valeur :'}
+          value="" // Garantir que l'input est vide
+          disabled={true}
         />
       );
     }
   };
   
 
+  if (loading) return <div className='loader'></div>;
+  if (error) return <div>Error: {error}</div>;
+  if (!data.length) return <div>No data available</div>;
 
   return (
     <div className="Visualiser">
@@ -69,36 +137,27 @@ const Suivi = () => {
       </center>
       <div className="form-group">
         <label htmlFor="selectOption">Element de Filtrage:</label>
-        <select
-          id="selectOption"
-          className="form-control"
-          onChange={(e) => handleChangefiltrage(e)}
-        >
-          <option value="Valeur :" disabled>[Choisir Element de Filtrage]</option>
+        <select id="selectOption" className="form-control" onChange={handleChangefiltrage}>
+          <option value="Valeur :">[ Toutes les Factures ]</option>
           <option value="Nº De Remise:">Nº De Remise</option>
           <option value="Nº De Cheque :">Nº De Cheque</option>
         </select>
         <label htmlFor="textInput">{filtrageItem}</label>
         {renderInputOrSelect()}
-        <select
-          id="itemsPerPageSelect"
-          onChange={(e) => handleItemsPerPageChange(e)}
-          title="Nombre de colonnes"
-        >
+        <select id="itemsPerPageSelect" onChange={handleItemsPerPageChange} title="Nombre de colonnes">
           <option value="5">5</option>
           <option value="10">10</option>
           <option value="15">15</option>
           <option value="20">20</option>
         </select>
       </div>
-      <div  className='total-montant'>
+      <div className='total-montant'>
         {filtrageItem === 'Nº De Remise:' && (
-          <div>Total du montant encaissé : {totalMontant.toFixed(2)} Dh</div>
+          <p className='total'>Total du montant encaissé : {totalMontant.toFixed(2)} Dh</p>
         )}
       </div>
 
-      <Table data={data} itemsPerPage={itemsPerPage} />
-      
+      <Table data={displayData} itemsPerPage={itemsPerPage} />
     </div>
   );
 };
